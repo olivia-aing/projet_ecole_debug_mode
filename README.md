@@ -4,7 +4,7 @@
 
 `\debug_mode` est un jeu vidéo 2D en vue à la 3e personne.
 
-Incarnez Kiki l'araignée, et partez à l'aventure pour reconstituer son monde perdu.
+ Jouez Kiki, une araignée amnésique, et utilisez le pouvoir du Terminal pour recouvrir les fichiers composant votre monde.
 
 
 ![image du menu start de \debug_mode](./IMAGES_README/startMenu_0.png "\debug_mode start menu")

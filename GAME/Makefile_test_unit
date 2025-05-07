@@ -1,0 +1,55 @@
+# pour exécuter les tests unitaires : make -f Makefile_test_unit clean run_tests
+
+CFLAGS = -c -std=c99 -Wall -Wextra -pedantic
+CC = gcc
+
+CFLAGS += $(shell pkg-config --cflags sdl2)
+LDFLAGS += $(shell pkg-config --libs sdl2)
+CFLAGS += $(shell pkg-config --cflags SDL2_image)
+LDFLAGS += $(shell pkg-config --libs SDL2_image)
+CFLAGS += $(shell pkg-config --cflags SDL2_ttf)
+LDFLAGS += $(shell pkg-config --libs SDL2_ttf)
+CFLAGS += $(shell pkg-config --cflags SDL2_mixer)
+LDFLAGS += $(shell pkg-config --libs SDL2_mixer)
+
+all : fileprio.o astar.o test_astar.o carte.o
+	$(CC) -fsanitize=address -Wall -Wextra -o test_astar fileprio.o astar.o test_astar.o carte.o $(LDFLAGS)
+
+all_carte : fileprio.o astar.o pouvoir_carte.o test_pouvoir_carte.o carte.o
+	$(CC) -fsanitize=address -o test_pouvoir_carte fileprio.o astar.o pouvoir_carte.o test_pouvoir_carte.o carte.o $(LDFLAGS)
+
+all_tests : fileprio.o astar.o carte.o test_unitaire.o
+	$(CC) -fsanitize=address -Wall -Wextra -o tests fileprio.o astar.o carte.o test_unitaire.o $(LDFLAGS)
+
+test_unitaire.o : ./src/tests/test_unitaire.c
+	$(CC) -c -Wall -Wextra ./src/tests/test_unitaire.c
+
+fileprio.o : ./src/plugins/fileprio.c ./src/plugins/fileprio.h
+	$(CC) -c -Wall -Wextra ./src/plugins/fileprio.c
+
+astar.o : ./src/plugins/astar.c ./src/plugins/astar.h
+	$(CC) -c -Wall -Wextra ./src/plugins/astar.c
+
+pouvoir_carte.o : ./src/plugins/pouvoir_carte.c ./src/plugins/pouvoir_carte.h
+	$(CC) -c ./src/plugins/pouvoir_carte.c $(CFLAGS)
+
+test_astar.o : ./src/tests/test_astar.c
+	$(CC) -c -Wall -Wextra ./src/tests/test_astar.c 
+
+test_pouvoir_carte.o : ./src/tests/test_pouvoir_carte.c
+	$(CC) -c ./src/tests/test_pouvoir_carte.c $(CFLAGS)
+
+carte.o : ./src/plugins/carte.h ./src/plugins/carte.c
+		$(CC) -c ./src/plugins/carte.c $(CFLAGS)
+
+run : all
+	./test_astar
+
+run_carte : all_carte
+	./test_pouvoir_carte
+
+run_tests : all_tests
+	./tests
+
+clean :
+	rm -f test_astar test_pouvoir_carte tests *.o
